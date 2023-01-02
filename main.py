@@ -91,7 +91,7 @@ class NewCarsScraper:
                 car_color=car_color,
                 available_color=available_color,
                 image=image,
-                max_speed=max_speed
+                max_speed=max_speed,
             )
             print(title)
             self.database.add_auto(objects=data)
