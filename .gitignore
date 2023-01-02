@@ -1,0 +1,13 @@
+.idea
+venv
+.env
+dz.txt
+__pycache__/
+*.py[cod]
+datapostgres
+*$py.class
+*.pyc
+
+
+
+

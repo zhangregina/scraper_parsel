@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  auto_ria_db:
+    container_name: autoria
+    image: postgres:13
+    restart: always # может упасть контейнер из-за плохое соединение с докерхаб, неправильные команды в докеркомпозе и.т.д.
+    volumes:
+      - ./data-postgres:/var/lib/postgresql/data # чтоб все volumes были в этом проекте, добавить в gitignore
+    ports:
+      - "5454:5432" # внешний порт: внутренний порт
+    environment:
+      POSTGRES_DB: auto_ria_db
+      POSTGRES_NAME: postgres
+      POSTGRES_PASSWORD: drftghjkm2345
+
+
+
+
+#Docker hub - хранитель images
