@@ -3,6 +3,8 @@ import requests
 from config import DEFAULT_HEADERS
 from db.models import AutoRiaModel
 from db.database import Database
+from logs_mongo.mongo_collection import VinCodeModel
+from logs_mongo.mongo_database import Mongo_DB
 
 
 class NewCarsScraper:
@@ -28,11 +30,13 @@ class NewCarsScraper:
     AVAILABLE_COLOR_XPATH = '//dd[@class="defines_list_value color"]//a/@title'
     IMAGE_XPATH = "//picture//img/@src"  # all images
     MAX_SPEED_XPATH = '//ul[@class="full-characteristics-list accordion-body unstyle size13"]//li[2]//ul//li[2]//strong/span[@class="el"]/text()'  # проверка
+    VIN_CODE_XPATH = '//span[@class="checked_ad label-check"]/svg/@aria-label'
 
     def __init__(self):
         self.all_pages = []
         self.all_urls = []
         self.database = Database()
+        self.mongo_database = Mongo_DB()
 
     def get_all_pages(self):
         for i in range(1, 3):
@@ -71,6 +75,9 @@ class NewCarsScraper:
             available_color = tree.xpath(self.AVAILABLE_COLOR_XPATH).extract()
             image = tree.xpath(self.IMAGE_XPATH).extract()
             max_speed = tree.xpath(self.MAX_SPEED_XPATH).extract_first()
+            vin_code = tree.xpath(self.VIN_CODE_XPATH).extract_first()
+            if vin_code == None:
+                vin_code = 'Отсутствует'
 
             data = AutoRiaModel(
                 current_url=response.request.url,
@@ -93,8 +100,14 @@ class NewCarsScraper:
                 image=image,
                 max_speed=max_speed,
             )
-            print(title)
+            # print(title)
             self.database.add_auto(objects=data)
+            vin_code_data = VinCodeModel.auto_collection = {
+                "vin_code": vin_code,
+                "url": response.request.url,
+                "date": VinCodeModel.auto_collection.get('date')}
+            print(vin_code_data)
+            self.mongo_database.add_to_collection(objectss=vin_code_data)
 
     def main(self):
         self.get_all_pages()

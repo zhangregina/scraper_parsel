@@ -28,5 +28,6 @@ class AutoRiaModel(Base):
     available_color = Column(String(250), nullable=True)
     image = Column(TEXT, nullable=True)
     max_speed = Column(String(100), nullable=True)
+    vin_code = Column(String(150), nullable=True)
 
     created_at = Column(DateTime, default=func.now())
