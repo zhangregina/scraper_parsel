@@ -6,6 +6,5 @@ class VinCodeModel:
         "_id": "",
         "vin_code": "",
         "url": "",
-        "date": datetime.now().strftime("%d/%m/%Y, %H:%M:%S")}
-
-
+        "date": datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
+    }

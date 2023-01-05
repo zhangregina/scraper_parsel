@@ -3,7 +3,7 @@ import requests
 from config import DEFAULT_HEADERS
 from db.models import AutoRiaModel
 from db.database import Database
-from logs_mongo.mongo_collection import VinCodeModel
+from logs_mongo.mongo_document import VinCodeModel
 from logs_mongo.mongo_database import Mongo_DB
 
 
@@ -77,7 +77,7 @@ class NewCarsScraper:
             max_speed = tree.xpath(self.MAX_SPEED_XPATH).extract_first()
             vin_code = tree.xpath(self.VIN_CODE_XPATH).extract_first()
             if vin_code == None:
-                vin_code = 'Отсутствует'
+                vin_code = "Отсутствует"
 
             data = AutoRiaModel(
                 current_url=response.request.url,
@@ -105,9 +105,10 @@ class NewCarsScraper:
             vin_code_data = VinCodeModel.auto_collection = {
                 "vin_code": vin_code,
                 "url": response.request.url,
-                "date": VinCodeModel.auto_collection.get('date')}
+                "date": VinCodeModel.auto_collection.get("date"),
+            }
             print(vin_code_data)
-            self.mongo_database.add_to_collection(objectss=vin_code_data)
+            self.mongo_database.add_to_collection(auto_objects=vin_code_data)
 
     def main(self):
         self.get_all_pages()
@@ -117,12 +118,3 @@ class NewCarsScraper:
 if __name__ == "__main__":
     scraper = NewCarsScraper()
     scraper.main()
-
-# Все написать в стиле ООП = done
-# Вытащить все данные о машине которые сможешь взять = done
-# Вытащить все страницы = done
-# Создать базу данных PostgreSQL или MySQL
-# Записать данные о машине вместе с его ссылкой (не менее 12 полей) (img обязателен) = done
-# Желательно завернуть базу данных в докере
-# Максимально красиво запушить в гитхаб
-# Желательно использовать black и flake8 (посмотреть туториалы) = done
