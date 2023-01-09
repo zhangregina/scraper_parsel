@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy_utils import database_exists, create_database
 from db.models import Base
 from decouple import config
+from .models import AutoRiaModel
 
 
 class Database:
@@ -18,5 +19,20 @@ class Database:
         self.session.commit()
 
     def add_auto(self, objects):
-        self.session.add(objects)
-        self.session.commit()
+        exists = self.session.query(AutoRiaModel).filter_by(current_url=objects.current_url).first() is not None
+        print(exists)
+        if exists:
+            # print("no data")
+            return None
+        else:
+            # print(f'new_data: {objects.title}')
+            self.session.add(objects)
+            self.session.commit()
+
+
+
+
+    # def method_execute_batch(self, values):
+    #     psycopg2.extras.execute_batch(self.cursor, "INSERT INTO {table} VALUES (%s, %s)".format(table=TABLE_NAME),
+    #                                   values)
+    #     self.connection.commit()

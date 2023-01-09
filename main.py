@@ -3,7 +3,6 @@ import requests
 from config import DEFAULT_HEADERS
 from db.models import AutoRiaModel
 from db.database import Database
-from logs_mongo.mongo_document import VinCodeModel
 from logs_mongo.mongo_database import Mongo_DB
 
 
@@ -39,16 +38,14 @@ class NewCarsScraper:
         self.mongo_database = Mongo_DB()
 
     def get_all_pages(self):
-        for i in range(1, 3):
+        for i in range(1, 5):
             self.all_pages.append(self.MAIN_URL.format(i))
-            for one_page in self.all_pages:
-                content = requests.get(one_page).text
-                page_selector = Selector(text=content)
-                self.all_urls.extend(page_selector.xpath(self.AUTO_URL_XPATH).extract())
-        # return self.all_urls
+        for one_page in self.all_pages:
+            content = requests.get(one_page).text
+            page_selector = Selector(text=content)
+            self.all_urls.extend(page_selector.xpath(self.AUTO_URL_XPATH).extract())
 
     def get_car_data(self):
-
         for url in self.all_urls:
             response = requests.request(
                 "GET",
@@ -101,14 +98,40 @@ class NewCarsScraper:
                 max_speed=max_speed,
             )
             # print(title)
-            self.database.add_auto(objects=data)
-            vin_code_data = VinCodeModel.auto_collection = {
+            # self.database.add_auto(objects=data)
+
+            vin_code_data = Mongo_DB.log_collection = {
                 "vin_code": vin_code,
                 "url": response.request.url,
-                "date": VinCodeModel.auto_collection.get("date"),
+                "date": Mongo_DB.log_collection.get("date"),
+            }
+            auto_collection_data = Mongo_DB.auto_collection = {
+                "current_url": response.request.url,
+                "title": title,
+                "price": price,
+                "price_usd_euro": price_usd_euro,
+                "actual_cost_date": actual_cost_date,
+                "in_stock": in_stock,
+                "car_rating": car_rating,
+                "credit": credit,
+                "autosalon_name": autosalon_name,
+                "autosalon_rating": autosalon_rating,
+                "location": location,
+                "engine": engine,
+                "gearbox": gearbox,
+                "privod": privod,
+                "generation": generation,
+                "car_color": car_color,
+                "available_color": available_color,
+                "image": image,
+                "max_speed": max_speed,
+                "date": Mongo_DB.auto_collection.get("date"),
             }
             print(vin_code_data)
-            self.mongo_database.add_to_collection(auto_objects=vin_code_data)
+            print(auto_collection_data)
+            self.mongo_database.add_to_log_collection(log_objects=vin_code_data)
+            self.mongo_database.add_to_auto_collection(auto_objects=auto_collection_data)
+
 
     def main(self):
         self.get_all_pages()
