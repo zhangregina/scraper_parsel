@@ -4,6 +4,8 @@ from config import DEFAULT_HEADERS
 from db.models import AutoRiaModel
 from db.database import Database
 from logs_mongo.mongo_database import Mongo_DB
+from async_redis.rds_database import Redis_DB, add_to_redis_db
+import asyncio
 
 
 class NewCarsScraper:
@@ -36,9 +38,10 @@ class NewCarsScraper:
         self.all_urls = []
         self.database = Database()
         self.mongo_database = Mongo_DB()
+        # self.redis_database = Redis_DB()
 
     def get_all_pages(self):
-        for i in range(1, 5):
+        for i in range(1, 3):
             self.all_pages.append(self.MAIN_URL.format(i))
         for one_page in self.all_pages:
             content = requests.get(one_page).text
@@ -76,7 +79,7 @@ class NewCarsScraper:
             if vin_code == None:
                 vin_code = "Отсутствует"
 
-            data = AutoRiaModel(
+            postgresql_data = AutoRiaModel(
                 current_url=response.request.url,
                 title=title,
                 price=price,
@@ -98,7 +101,7 @@ class NewCarsScraper:
                 max_speed=max_speed,
             )
             # print(title)
-            # self.database.add_auto(objects=data)
+            # self.database.add_auto(objects=postgresql_data)
 
             vin_code_data = Mongo_DB.log_collection = {
                 "vin_code": vin_code,
@@ -127,11 +130,18 @@ class NewCarsScraper:
                 "max_speed": max_speed,
                 "date": Mongo_DB.auto_collection.get("date"),
             }
-            print(vin_code_data)
-            print(auto_collection_data)
-            self.mongo_database.add_to_log_collection(log_objects=vin_code_data)
-            self.mongo_database.add_to_auto_collection(auto_objects=auto_collection_data)
+            # print(vin_code_data)
+            # print(auto_collection_data)
+            # self.mongo_database.add_to_log_collection(log_objects=vin_code_data)
+            # self.mongo_database.add_to_auto_collection(auto_objects=auto_collection_data)
 
+            redis_data = Redis_DB.redis_url_data = {
+                "url": response.request.url,
+                "date": Redis_DB.redis_url_data.get("date"),
+            }
+            print(redis_data)
+            # self.redis_database.(redis_objects=redis_data)
+            asyncio.run(add_to_redis_db(redis_objects=redis_data))
 
     def main(self):
         self.get_all_pages()

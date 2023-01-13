@@ -3,8 +3,9 @@ import certifi
 from pymongo import MongoClient
 from decouple import config
 
-
+#объединить две модельки в один большой словарь ?
 class Mongo_DB:
+
     log_collection = {
         "_id": "",
         "vin_code": "",
