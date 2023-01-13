@@ -19,7 +19,12 @@ class Database:
         self.session.commit()
 
     def add_auto(self, objects):
-        exists = self.session.query(AutoRiaModel).filter_by(current_url=objects.current_url).first() is not None
+        exists = (
+            self.session.query(AutoRiaModel)
+            .filter_by(current_url=objects.current_url)
+            .first()
+            is not None
+        )
         print(exists)
         if exists:
             # print("no data")
@@ -30,9 +35,3 @@ class Database:
             self.session.commit()
 
 
-
-
-    # def method_execute_batch(self, values):
-    #     psycopg2.extras.execute_batch(self.cursor, "INSERT INTO {table} VALUES (%s, %s)".format(table=TABLE_NAME),
-    #                                   values)
-    #     self.connection.commit()

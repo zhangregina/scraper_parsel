@@ -3,7 +3,7 @@ import certifi
 from pymongo import MongoClient
 from decouple import config
 
-#объединить две модельки в один большой словарь ?
+# объединить две модельки в один большой словарь ?
 class Mongo_DB:
 
     log_collection = {
@@ -41,7 +41,9 @@ class Mongo_DB:
         self.connection_string = config("MONGO_DB_URL")
         self.client = MongoClient(self.connection_string, tlsCAFile=certifi.where())
         self.db = self.client["auto_mongo_db"]
-        self.collection = self.db["log_collection"]  # коллекция как таблица в реляционной бд
+        self.collection = self.db[
+            "log_collection"
+        ]  # коллекция как таблица в реляционной бд
         self.main_collection = self.db["auto_collection"]
 
     def add_to_log_collection(self, log_objects):

@@ -140,7 +140,6 @@ class NewCarsScraper:
                 "date": Redis_DB.redis_url_data.get("date"),
             }
             print(redis_data)
-            # self.redis_database.(redis_objects=redis_data)
             asyncio.run(add_to_redis_db(redis_objects=redis_data))
 
     def main(self):
